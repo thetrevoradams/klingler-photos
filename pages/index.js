@@ -1,65 +1,38 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import React from 'react'
+import Nav from '../src/nav'
+import Card from '../src/card'
+import useRequireAuth from '../src/useRequireAuth'
 
-export default function Home() {
+const Homepage = ({ images = [], notFound = false }) => {
+  const auth = useRequireAuth()
+  if (!auth.user) return null
+  console.log(`images`, images)
+
+  if (notFound) {
+    console.log('not found')
+  } else {
+    console.log(`images length`, images?.length)
+  }
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+    <div className="bg-gray-100 h-full h-min-screen w-full">
+      <Nav />
+      <div className="flex flex-wrap p-2 justify-center">
+        {images.map(({ id, ...props }) => (
+          <Card key={id} id={id} {...props} />
+        ))}
+      </div>
     </div>
   )
 }
+
+export async function getServerSideProps() {
+  const data = await fetch(`${process.env.BASE_URL}/api/getPhotos`)
+  const json = await data.json()
+
+  console.log('getServerSideProps json', json)
+  return {
+    props: { images: json.images },
+  }
+}
+
+export default Homepage

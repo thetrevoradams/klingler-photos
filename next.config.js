@@ -6,7 +6,6 @@ module.exports = {
     domains: ['firebasestorage.googleapis.com'],
   },
   env: {
-    NODE_ENV: process.env.NODE_ENV,
     BASE_URL: process.env.BASE_URL,
     FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
     FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,

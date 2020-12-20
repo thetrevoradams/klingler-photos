@@ -21,7 +21,7 @@ const Homepage = ({ images = [], notFound = false }) => {
 }
 
 export async function getServerSideProps() {
-  const data = await fetch(`${process.env.BASE_URL}/api/getPhotos`)
+  const data = await fetch(`${process.env.BASE_URL}/.netlify/functions/next_api_getPhotos`)
   const json = await data.json()
 
   return {

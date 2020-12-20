@@ -38,7 +38,7 @@ const MemoryPage = ({ image: { id, contributorName, url, filename, date, tags } 
 }
 
 export async function getServerSideProps({ query }) {
-  const data = await fetch(`${process.env.BASE_URL}/api/getPhoto?id=${query.id}`)
+  const data = await fetch(`${process.env.BASE_URL}/.netlify/functions/next_api_getPhotos?id=${query.id}`)
   const json = data ? await data.json() : { image: {} }
 
   return {

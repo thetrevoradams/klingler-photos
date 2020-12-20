@@ -30,7 +30,6 @@ const useAuthProvider = () => {
       const userData = await getUserData(authResp?.user?.uid)
       return userData
     } catch (error) {
-      console.log('Error getting document:', error)
       return { error }
     }
   }
@@ -42,17 +41,14 @@ const useAuthProvider = () => {
       const emailResp = await auth.sendPasswordResetEmail(email)
       return emailResp
     } catch (error) {
-      console.log('Error getting document:', error)
       return { error }
     }
   }
 
   const handleAuthStateChanged = useCallback(
     (curUser) => {
-      console.log(`handleAuthStateChanged -> curUser`, curUser)
       if (curUser?.uid) {
         getUserData(curUser?.uid)
-        console.log(`handleAuthStateChanged -> redirectPath`, redirectPath)
         if (redirectPath) router.push(redirectPath)
       }
     },

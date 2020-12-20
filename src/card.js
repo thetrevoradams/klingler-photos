@@ -3,7 +3,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 const Card = ({ id, contributorName, url, date, tags = [], filename }) => {
-  console.log(`Card -> id`, id)
   return (
     <Link href={`/mem/${id}`}>
       <a className="overflow-hidden border-b-4 border-light-blue-500 max-w-96 md:w-80 max-h-96 md:h-80 m-2.5 relative rounded hover:scale-125">

@@ -10,10 +10,8 @@ const useRequireAuth = () => {
   useEffect(() => {
     let path = router.pathname
     if (path === '/mem/[id]') path = `/mem/${router.query.id}`
-    console.log(`useEffect -> path`, path)
     setRedirectPath(path)
     if (!user) {
-      console.log('useRequireAuth -> no user')
       router.push('/login')
     }
   }, [user, router, setRedirectPath])

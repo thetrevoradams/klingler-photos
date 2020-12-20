@@ -7,7 +7,6 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter()
   const { user } = useAuth()
   if (!user) {
-    console.log('_app -> no user')
     return router.push('/login')
   }
 

@@ -1,6 +1,6 @@
 import React from 'react'
-import Image from 'next/image'
 import { DiscussionEmbed } from 'disqus-react'
+import fetch from 'isomorphic-unfetch'
 import Nav from '../../src/nav'
 
 const MemoryPage = ({ image: { id, contributorName, url, filename, date, tags } }) => {
@@ -38,12 +38,9 @@ const MemoryPage = ({ image: { id, contributorName, url, filename, date, tags } 
 }
 
 export async function getServerSideProps({ query }) {
-  console.log(` ---id---`, query)
   const data = await fetch(`${process.env.BASE_URL}/api/getPhoto?id=${query.id}`)
   const json = data ? await data.json() : { image: {} }
 
-  console.log('getServerSideProps json', json)
-  console.log('getServerSideProps json.image', json.image)
   return {
     props: { image: json.image },
   }

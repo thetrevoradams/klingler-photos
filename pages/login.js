@@ -34,7 +34,6 @@ const LoginPage = () => {
       signIn(email, password)
         .then((resp) => {
           setLoading(false)
-          console.log(`signIn -> resp`, resp)
           setEmail('')
           setPassword('')
           if (resp.error) {
@@ -45,7 +44,6 @@ const LoginPage = () => {
         })
         .catch((err) => {
           setLoading(false)
-          console.log('err', err)
           setErrorMsg('Invalid email or password')
         })
     }

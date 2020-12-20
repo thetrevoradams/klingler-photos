@@ -1,7 +1,6 @@
 import firebase from '../../utils/firebaseAdmin'
 
 export default async (req, res) => {
-  console.log('req.query.id', req.query.id)
   try {
     const image = await firebase
       .collection('images')

@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 module.exports = {
+  target: 'serverless',
   images: {
     domains: ['firebasestorage.googleapis.com'],
   },

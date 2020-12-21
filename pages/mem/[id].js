@@ -4,7 +4,7 @@ import fetch from 'isomorphic-unfetch'
 import Nav from '../../src/nav'
 
 const MemoryPage = ({ image: { id, contributorName, url, filename, date, tags } }) => {
-  const disqusShortname = 'your-disqus-shortname'
+  const disqusShortname = filename
   const disqusConfig = {
     url: `https://klingler.theburrow.us/${id}`,
     identifier: id,

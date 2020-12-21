@@ -6,7 +6,7 @@ import Nav from '../../src/nav'
 const MemoryPage = ({ image: { id, contributorName, url, filename, date, tags } }) => {
   const disqusShortname = filename
   const disqusConfig = {
-    url: `https://klingler.theburrow.us/${id}`,
+    url: `https://klingler.theburrow.us/mem/${id}`,
     identifier: id,
     title: filename,
   }

@@ -49,9 +49,13 @@ const LoginPage = () => {
     }
   }
   const validEmail = () => {
-    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-    const error = valid ? '' : 'Invalid email'
-    setErrorMsg(error)
+    if (email.length > 1) {
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      const error = valid ? '' : 'Invalid email'
+      setErrorMsg(error)
+    } else {
+      setErrorMsg('')
+    }
   }
   return (
     <div className="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">

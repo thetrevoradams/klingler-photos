@@ -33,7 +33,7 @@ const MemoryPage = ({ image: { id, contributorName, url, filename, date, tags },
         <img src={url} alt={filename} className="object-contain h-full" />
         {prevId && (
           <Link href={`/mem/${prevId}`}>
-            <a className="absolute top-80 left-0 px-5 py-8 opacity-50 hover:opacity-100 transition-opacity">
+            <a className="absolute top-1/2 left-0 px-5 py-8 opacity-50 hover:opacity-100 transition-opacity">
               <button
                 type="button"
                 className="rounded-full text-white bg-gray-700 font-bold h-10 w-10 flex items-center justify-center"
@@ -53,7 +53,7 @@ const MemoryPage = ({ image: { id, contributorName, url, filename, date, tags },
         )}
         {nextId && (
           <Link href={`/mem/${nextId}`}>
-            <a className="absolute top-80 right-0 px-5 py-8 opacity-50 hover:opacity-100">
+            <a className="absolute top-1/2 right-0 px-5 py-8 opacity-50 hover:opacity-100">
               <button
                 type="button"
                 className="rounded-full text-white bg-gray-700 font-bold h-10 w-10 flex items-center justify-center transition-opacity"

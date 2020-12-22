@@ -42,7 +42,7 @@ const LoginPage = () => {
             router.push('/')
           }
         })
-        .catch((err) => {
+        .catch(() => {
           setLoading(false)
           setErrorMsg('Invalid email or password')
         })

@@ -1,11 +1,19 @@
-import firebase from '../../utils/firebaseAdmin'
+import getFirebaseAdmin from '../../firebase/admin'
 
-export default async (req, res) => {
+const getPhotos = async (req, res) => {
   try {
-    const data = await firebase.collection('images').get()
-    const images = data.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+    const admin = await getFirebaseAdmin()
+
+    const imagesResp = await admin
+      .firestore()
+      .collection('images')
+      .get()
+
+    const images = imagesResp.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
     res.json({ images })
   } catch (error) {
     res.json({ error })
   }
 }
+
+export default getPhotos

@@ -6,16 +6,17 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     screens: {
+      xsMax: { max: '355px' },
       sm: '640px',
       smMax: { max: '640px' },
       md: '768px',
-      mdMax: { max: '768px' },
+      mdMax: { max: '768px', min: '641px' },
       lg: '1024px',
-      lgMax: { max: '1024px' },
+      lgMax: { max: '1024px', min: '769px' },
       xl: '1280px',
-      xlMax: { max: '1280px' },
+      xlMax: { max: '1280px', min: '1025px' },
       '2xl': '1536px',
-      '2xlMax': { max: '1536px' },
+      '2xlMax': { max: '1536px', min: '1281px' },
     },
     colors: {
       transparent: 'transparent',
@@ -353,6 +354,8 @@ module.exports = {
     height: (theme) => ({
       auto: 'auto',
       ...theme('spacing'),
+      '45vh': '45vh',
+      '60vh': '60vh',
       '1/2': '50%',
       '1/3': '33.333333%',
       '2/3': '66.666667%',

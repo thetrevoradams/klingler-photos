@@ -1,12 +1,12 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
-import { useAuth } from '../src/useAuth'
+import useAuth from '../src/useAuth'
 import Toast from '../src/toast'
 
 const LoginPage = () => {
   const router = useRouter()
-  const { signIn, signOut, passwordReset } = useAuth()
+  const { signIn, passwordReset } = useAuth()
   const [loading, setLoading] = useState(false)
   const [forgotPass, setForgotPass] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')

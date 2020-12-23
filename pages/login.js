@@ -65,7 +65,7 @@ const LoginPage = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-light-blue-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl" />
         <div className="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
           <div className="max-w-md mx-auto">
-            <div className="flex flex-row">
+            <div className="flex flex-row items-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -82,13 +82,13 @@ const LoginPage = () => {
                   d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                 />
               </svg>
-              <div className="uppercase tracking-wide text-sm text-light-blue-500 font-semibold ml-2">
+              <div className="uppercase tracking-wide text-md text-light-blue-500 font-semibold ml-2">
                 Klingler Photos
               </div>
             </div>
             <div className="divide-y divide-gray-200">
               <div className="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
-                <p>An collection of family photos and memories.</p>
+                <p>A collection of family photos and memories.</p>
                 <form method="POST" className="flex flex-col items-start" onSubmit={onSubmit}>
                   <div className="flex flex-col md:flex-row items-start w-full">
                     <input
@@ -128,7 +128,7 @@ const LoginPage = () => {
               </div>
               <div className="pt-6 text-base leading-6 font-bold sm:text-lg sm:leading-7">
                 <p>Don&apos;t have an account?</p>
-                <p className="text-light-blue-500">Talk to Trevor</p>
+                <p className="text-gray-400">Talk to Trevor</p>
               </div>
             </div>
           </div>

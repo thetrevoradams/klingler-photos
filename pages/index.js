@@ -1,24 +1,22 @@
 import React from 'react'
 import fetch from 'isomorphic-unfetch'
 import { Router } from 'next/router'
+import dynamic from 'next/dynamic'
 import Nav from '../src/nav'
-import Card from '../src/card'
 import verifySession from '../utils/verifySession'
+
+const FlowGrid = dynamic(import('../src/FlowGrid'), { ssr: false })
 
 const Homepage = ({ images = [], user, error }) => {
   return (
-    <div className="bg-gray-100 h-full min-h-screen w-full">
+    <div className="bg-gray-100 h-full min-h-screen w-full p-2">
       <Nav user={user} />
       {error ? (
         <div className="flex flex-wrap p-10 justify-center text-red-400">
           Whoops! There was an error fetching the photos.
         </div>
       ) : (
-        <div className="flex flex-wrap p-2 justify-center">
-          {images?.map(({ id, ...props }) => (
-            <Card key={id} id={id} {...props} />
-          ))}
-        </div>
+        <FlowGrid heightEstimate={340} images={images} />
       )}
     </div>
   )

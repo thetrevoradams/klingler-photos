@@ -2,7 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-const Card = ({ id, contributorName, url, date, tags = [], filename }) => {
+const Card = ({ id, url, tags = [] }) => {
   return (
     <Link href={`/mem/${id}`}>
       <a className="overflow-hidden box-border border-b-4 border-light-blue-500 max-w-96 md:w-80 md:max-h-96 sm:h-80 smMax:max-h-80 xsMax:max-h-72 m-2.5 relative rounded hover:scale-125 bg-light-blue-100">

@@ -32,7 +32,6 @@ const useAuth = () => {
     }
   }
 
-  /** TODO: handle logout */
   const signOut = async () => {
     await fetch(`${process.env.BASE_URL}/api/signOut`)
     const auth = await getFirebase().auth()

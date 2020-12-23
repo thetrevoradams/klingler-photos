@@ -103,6 +103,8 @@ const Nav = ({ user }) => {
         </button>
         {navOpen && (
           <div
+            role="dialog"
+            aria-modal="true"
             ref={modalRef}
             className="origin-top-right top-14 overflow-hidden absolute right-2 mt-2 w-56 rounded-md shadow-2xl bg-white ring-1 ring-black ring-opacity-5"
           >

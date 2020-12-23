@@ -1,18 +1,45 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { DiscussionEmbed } from 'disqus-react'
 import fetch from 'isomorphic-unfetch'
 import Link from 'next/link'
 import { Router, useRouter } from 'next/router'
+import DatePicker from 'react-datepicker'
 import Nav from '../../src/nav'
 import verifySession from '../../utils/verifySession'
+import 'react-datepicker/dist/react-datepicker.css'
+import updateFileData from '../../src/updateFileData'
+import Toast from '../../src/toast'
 
-const MemoryPage = ({ image: { id, contributorName, url, filename, date, tags }, nextId, prevId, user }) => {
+const MemoryPage = ({
+  image: {
+    id,
+    contributorName,
+    url,
+    filename,
+    date: { _seconds: s },
+    tags,
+  },
+  nextId,
+  prevId,
+  user,
+  imageId,
+}) => {
+  const [displayedDate, setDisplayedDate] = useState()
+  const [displayedFilename, setDisplayedFilename] = useState()
+  const [errorMsg, setErrorMsg] = useState('')
+  const [successMsg, setSuccessMsg] = useState('')
+  const [filenameVal, setFilenameVal] = useState()
+  const [dateVal, setDateVal] = useState(new Date(s * 1000))
+  const [editing, setEditing] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const editModalRef = useRef()
+
   const router = useRouter()
   const disqusShortname = `klingler`
   const disqusConfig = {
     url: `https://klingler.theburrow.us/mem/${id}`,
     identifier: `${id}`,
-    title: `${filename}`,
+    title: `${displayedFilename}`,
   }
 
   useEffect(() => {
@@ -26,14 +53,80 @@ const MemoryPage = ({ image: { id, contributorName, url, filename, date, tags },
     }
   }, [nextId, prevId, router])
 
+  useEffect(() => {
+    document.body.style.overflow = editing ? 'hidden' : 'unset'
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [editing])
+
+  useEffect(() => {
+    const clickOutside = (e) => {
+      if (e.type === 'keydown') {
+        if (e.key === 'Escape') setEditing(false)
+      } else if (editModalRef.current && !editModalRef.current.contains(e.target)) {
+        // Need to ensure button 'onClick' doesn't toggle the visible state
+        setTimeout(() => {
+          setEditing(false)
+        }, 50)
+      }
+    }
+    document.addEventListener('mouseup', clickOutside)
+    document.addEventListener('keydown', clickOutside)
+    return () => {
+      document.removeEventListener('mouseup', clickOutside)
+      document.removeEventListener('keydown', clickOutside)
+    }
+  }, [editModalRef])
+
+  useEffect(() => {
+    const newDate = new Date(s * 1000)
+    const formatted = new Intl.DateTimeFormat('en', { month: 'short', day: '2-digit', year: 'numeric' }).format(newDate)
+    setDisplayedDate(formatted)
+  }, [s])
+
+  useEffect(() => {
+    setErrorMsg('')
+    setSuccessMsg('')
+    setFilenameVal(filename)
+    setDisplayedFilename(filename)
+  }, [filename])
+
+  const handleUpdate = async () => {
+    setLoading(true)
+    try {
+      const resp = await updateFileData(imageId, { filenameVal, dateVal })
+      setLoading(false)
+      setEditing(false)
+      if (!resp.error) {
+        setSuccessMsg('Successfully saved your changes')
+        setDisplayedFilename(filenameVal)
+        const formatted = new Intl.DateTimeFormat('en', { month: 'short', day: '2-digit', year: 'numeric' }).format(
+          dateVal
+        )
+        setDisplayedDate(formatted)
+      } else {
+        setErrorMsg(`There was a problem saving your changes: ${resp.error}`)
+      }
+    } catch (error) {
+      setErrorMsg(`There was a problem saving your changes: ${error}`)
+    }
+  }
+
+  const onChange = ({ target }) => {
+    if (target.name === 'filename') setFilenameVal(target.value)
+  }
+
   return (
     <>
       <Nav user={user} />
       <div className="bg-gray-100 flex justify-center items-center h-45vh lg:h-60vh relative">
-        <img src={url} alt={filename} className="object-contain h-full" />
+        {errorMsg && <Toast type="error" msg={errorMsg} onComplete={setErrorMsg} />}
+        {successMsg && <Toast type="success" msg={successMsg} onComplete={setSuccessMsg} />}
+        <img src={url} alt={displayedFilename} className="object-contain h-full" />
         {prevId && (
           <Link href={`/mem/${prevId}`}>
-            <a className="absolute top-1/2 left-0 px-5 py-8 opacity-50 hover:opacity-100 transition-opacity">
+            <a className="absolute top-3/5 left-0 px-5 py-8 opacity-50 hover:opacity-100 transition-opacity">
               <button
                 type="button"
                 className="rounded-full text-white bg-gray-700 font-bold h-10 w-10 flex items-center justify-center"
@@ -53,7 +146,7 @@ const MemoryPage = ({ image: { id, contributorName, url, filename, date, tags },
         )}
         {nextId && (
           <Link href={`/mem/${nextId}`}>
-            <a className="absolute top-1/2 right-0 px-5 py-8 opacity-50 hover:opacity-100">
+            <a className="absolute top-3/5 right-0 px-5 py-8 opacity-50 hover:opacity-100">
               <button
                 type="button"
                 className="rounded-full text-white bg-gray-700 font-bold h-10 w-10 flex items-center justify-center transition-opacity"
@@ -74,19 +167,125 @@ const MemoryPage = ({ image: { id, contributorName, url, filename, date, tags },
       </div>
       <div className="bg-white flex xl:justify-center">
         <div className="mx-8 w-full xl:w-4/5 max-w-screen-xl">
-          <h1 className="text-6xl smMax:text-2xl mdMax:text-5xl lgMax:text-5xl font-bold mt-8">{filename}</h1>
-
-          {contributorName && (
-            <div className="py-2 mt-16 ">
-              <span className="uppercase font-light text-gray-500">Uploaded By</span>
-              <p className="text-2xl text-gray-900 font-semibold pt-2">{contributorName}</p>
-            </div>
-          )}
-
+          <div className="flex justify-between items-center mt-8">
+            <h1 className="text-6xl smMax:text-2xl mdMax:text-5xl lgMax:text-5xl font-bold ">{displayedFilename}</h1>
+            <button
+              type="button"
+              onClick={() => setEditing(!editing)}
+              className="text-gray-400 hover:text-light-blue-500 transition-colors duration-200 pl-2 py-4"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                height="24px"
+                width="24px"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+            </button>
+          </div>
+          <div className="grid gap-2 mt-8" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+            {contributorName && (
+              <div className="py-2">
+                <span className="uppercase font-light text-gray-500">Uploaded By</span>
+                <p className="text-2xl text-gray-900 font-semibold pt-2">{contributorName}</p>
+              </div>
+            )}
+            {displayedDate && (
+              <div className="py-2">
+                <span className="uppercase font-light text-gray-500">Date</span>
+                <p className="text-2xl text-gray-900 font-semibold pt-2">{displayedDate}</p>
+              </div>
+            )}
+          </div>
           <div className="description w-full my-16 text-gray-500 text-sm">
+            <p className="italic text-center">
+              This comment service requires you to create an account and be signed in to be able to post a comment.
+              There are links to sign up shown below.
+            </p>
             <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
           </div>
         </div>
+        {editing && (
+          <div
+            ref={editModalRef}
+            role="dialog"
+            aria-modal="true"
+            className="origin-top-right top-0 smMax:h-screen sm:top-1/3 left-0 right-0 fixed mx-auto my-0 sm:w-1/2 lg:w-1/3 max-w-screen-sm rounded-md shadow-2xl bg-white ring-1 ring-black ring-opacity-5 flex flex-col z-20"
+          >
+            <div className="p-4">
+              <p className="uppercase font-light text-gray-500">Edit Info</p>
+            </div>
+
+            <div className="p-4 flex-grow">
+              <label className="block">
+                <span className="text-gray-700">Name</span>
+                <input
+                  name="filename"
+                  onChange={onChange}
+                  value={filenameVal}
+                  className="border border-gray-300 rounded-md p-2 mt-1 block w-full"
+                  placeholder={filenameVal}
+                />
+              </label>
+              <div className="mt-4 flex flex-col">
+                <span className="text-gray-700">Date</span>
+                <DatePicker
+                  selected={dateVal}
+                  onChange={(date) => setDateVal(date)}
+                  inputPlaceholder="Select a date"
+                  showYearDropdown
+                  dateFormat="MM/dd/yyyy"
+                  className="w-full"
+                  customInput={
+                    <input className="border border-gray-300 rounded-md mt-1 p-2 w-full" placeholder={dateVal} />
+                  }
+                />
+              </div>
+            </div>
+            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-md">
+              <button
+                type="button"
+                onClick={handleUpdate}
+                disabled={loading ? true : undefined}
+                className={`w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-light-blue-600 text-base font-medium text-white hover:bg-light-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-light-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-60 ${
+                  loading ? 'cursor-not-allowed' : 'cursor-pointer'
+                }`}
+              >
+                {loading && (
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                )}
+                {loading ? 'Processing' : 'Save'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditing(false)}
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   )
@@ -97,7 +296,12 @@ export async function getServerSideProps(ctx) {
   if (authenticated) {
     const data = await fetch(`${process.env.BASE_URL}/api/getPhoto?id=${ctx.query.id}`)
     const json = data ? await data.json() : { image: {} }
-    const props = { image: json.image, user }
+
+    const props = {
+      image: { ...json.image },
+      user,
+      imageId: ctx.query.id,
+    }
     if (json.nextId) props.nextId = json.nextId
     if (json.prevId) props.prevId = json.prevId
 

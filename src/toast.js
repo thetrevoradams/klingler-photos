@@ -47,7 +47,7 @@ const Toast = ({ type = 'error', msg, persist, onComplete }) => {
     <div
       className={`${toastClass} ${
         showing ? 'slideInRight' : 'slideOutRight'
-      } border-l-4 p-4 w-80 absolute top-5 right-0`}
+      } border-l-4 p-4 w-80 absolute top-5 right-0 z-10`}
       role="alert"
     >
       <p className="font-bold">{title}</p>

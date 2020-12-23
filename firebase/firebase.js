@@ -1,5 +1,7 @@
 import firebase from 'firebase/app'
 import 'firebase/auth'
+import 'firebase/storage'
+import 'firebase/firestore'
 
 function getFirebase() {
   if (!firebase.apps.length) {
@@ -13,7 +15,6 @@ function getFirebase() {
       appId: process.env.FIREBASE_APP_ID,
     })
   }
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE)
 
   return firebase
 }

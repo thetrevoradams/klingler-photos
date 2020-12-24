@@ -103,7 +103,7 @@ const LoginPage = () => {
                     {!forgotPass && (
                       <input
                         onChange={onChange}
-                        className="border border-gray-300 bg-white text-gray-900 appearance-none block w-full rounded-md p-2 md:ml-2 mdMax:my-2 focus:border-blue-500 focus:outline-none"
+                        className="border border-gray-300 bg-white text-gray-900 appearance-none block w-full rounded-md p-2 md:ml-2 mdMax:my-2 smMax:my-2 focus:border-blue-500 focus:outline-none"
                         placeholder="Password"
                         type="password"
                         name="password"

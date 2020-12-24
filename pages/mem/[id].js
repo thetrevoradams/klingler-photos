@@ -215,7 +215,8 @@ const MemoryPage = ({ user, imageId }) => {
   return (
     <div className="h-full min-h-screen w-full">
       <Nav user={user} />
-
+      {errorMsg && <Toast type="error" msg={errorMsg} onComplete={() => dispatch({ type: 'clearMsg' })} />}
+      {successMsg && <Toast type="success" msg={successMsg} onComplete={() => dispatch({ type: 'clearMsg' })} />}
       {loading ? (
         <div className="flex flex-1 flex-wrap h-full w-full text-center flex-col justify-center items-center">
           <svg
@@ -241,10 +242,6 @@ const MemoryPage = ({ user, imageId }) => {
           ) : (
             <>
               <div className="bg-gray-100 flex justify-center items-center h-45vh lg:h-60vh relative">
-                {errorMsg && <Toast type="error" msg={errorMsg} onComplete={() => dispatch({ type: 'clearMsg' })} />}
-                {successMsg && (
-                  <Toast type="success" msg={successMsg} onComplete={() => dispatch({ type: 'clearMsg' })} />
-                )}
                 <img src={url} alt={displayedFilename} className="object-contain h-full" />
                 {prevId && (
                   <Link href={`/mem/${prevId}`}>
@@ -288,7 +285,7 @@ const MemoryPage = ({ user, imageId }) => {
                 )}
               </div>
               <div className="bg-white flex xl:justify-center">
-                <div className="mx-8 w-full xl:w-4/5 max-w-screen-xl">
+                <div className="mx-2 md:mx-8 w-full xl:w-4/5 max-w-screen-xl">
                   <div className="flex justify-between items-center mt-8">
                     <h1 className="text-6xl smMax:text-2xl mdMax:text-5xl lgMax:text-5xl font-bold ">
                       {displayedFilename}
@@ -345,7 +342,7 @@ const MemoryPage = ({ user, imageId }) => {
                     ref={editModalRef}
                     role="dialog"
                     aria-modal="true"
-                    className="origin-top-right top-0 smMax:h-screen sm:top-1/3 left-0 right-0 fixed mx-auto my-0 sm:w-1/2 lg:w-1/3 max-w-screen-sm rounded-md shadow-2xl bg-white ring-1 ring-black ring-opacity-5 flex flex-col z-20"
+                    className="origin-top-right top-0 smMax:h-full sm:top-1/3 left-0 right-0 fixed mx-auto my-0 sm:w-1/2 lg:w-1/3 max-w-screen-sm rounded-md shadow-2xl bg-white ring-1 ring-black ring-opacity-5 flex flex-col z-20"
                   >
                     <div className="p-4">
                       <p className="uppercase font-light text-gray-500">Edit Info</p>

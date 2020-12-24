@@ -29,7 +29,7 @@ const FlowGrid = ({ heightEstimate, images }) => {
         return (
           // eslint-disable-next-line react/no-array-index-key
           <Ghost key={index} heightEstimate={heightEstimate * partitionRowCount + (partitionRowCount - 1)}>
-            <div className="flex flex-wrap justify-center border border-red-400">
+            <div className="flex flex-wrap justify-center">
               {partitionItems.map(({ id, ...props }) => (
                 <Card key={id} id={id} {...props} />
               ))}

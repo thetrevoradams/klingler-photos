@@ -75,7 +75,7 @@ export const Observable = memo(({ children, threshold = 0.01, ...options }) => {
     return () => resizeObserver.disconnect()
   }, [observer])
   return (
-    <div ref={widthRef} className="border border-blue-700">
+    <div ref={widthRef}>
       <ObserverContext.Provider value={observer}>{children}</ObserverContext.Provider>
     </div>
   )

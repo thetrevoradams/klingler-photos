@@ -15,6 +15,7 @@ function getFirebase() {
       appId: process.env.FIREBASE_APP_ID,
     })
   }
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
 
   return firebase
 }

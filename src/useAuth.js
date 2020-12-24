@@ -33,6 +33,7 @@ const useAuth = () => {
   }
 
   const signOut = async () => {
+    if (window.snapshotObserver) window.snapshotObserver()
     await fetch(`${process.env.BASE_URL}/api/signOut`)
     const auth = await getFirebase().auth()
     auth.signOut()

@@ -14,6 +14,7 @@ const getPhotos = async () => {
 
     if (!fromCache.empty) {
       imgResp = fromCache.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      console.log('from cache', imgResp)
     } else {
       const fromServer = await firebase
         .firestore()
@@ -21,6 +22,7 @@ const getPhotos = async () => {
         .get({ source: 'server' })
 
       imgResp = fromServer.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      console.log('from server', imgResp)
 
       // set up cache
       window.snapshotObserver = await firebase
@@ -28,8 +30,8 @@ const getPhotos = async () => {
         .collection('images')
         .onSnapshot({ includeQueryMetadataChanges: true }, (s) => {
           s.docChanges().map((change) => ({ id: change.doc.id, ...change.doc.data() }))
-          // const source = s.metadata.fromCache ? 'local cache' : 'server'
-          // console.log(`Data came from ${source}`)
+          const source = s.metadata.fromCache ? 'local cache' : 'server'
+          console.log(`Data came from ${source}`)
         })
     }
 

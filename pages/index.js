@@ -69,7 +69,7 @@ const Homepage = ({ user }) => {
 export async function getServerSideProps(ctx) {
   const { authenticated, user } = await verifySession(ctx)
   if (authenticated) {
-    const pageProps = { user }
+    const pageProps = { user: user || '' }
 
     return {
       props: pageProps,

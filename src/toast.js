@@ -31,11 +31,13 @@ const Toast = ({ type = 'error', msg, persist, onComplete }) => {
       visibleTime = setTimeout(() => {
         // Give time for user to see toast
         setShowing(false)
-        fadeTime = setTimeout(() => {
-          // Allow fade out to complete
-          onComplete('')
-        }, 1200)
       }, 4500)
+    }
+    if (!persist) {
+      fadeTime = setTimeout(() => {
+        // Allow fade out to complete
+        onComplete()
+      }, 4501)
     }
     return () => {
       clearTimeout(visibleTime)

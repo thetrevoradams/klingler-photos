@@ -77,7 +77,6 @@ function reducer(state, action) {
           state.dateVal
         )
       }
-      console.log('state.descVal', state.descVal)
       return {
         ...state,
         updating: false,

@@ -12,7 +12,7 @@ import Toast from '../../src/toast'
 import getPhotos from '../../src/getPhotos'
 
 const initialState = {
-  image: { id: '', filename: '', date: { s: 0 } },
+  image: { id: '', filename: '', date: { s: 0 }, desc: '' },
   errorMsg: '',
   error: false,
   successMsg: false,
@@ -29,7 +29,7 @@ function reducer(state, action) {
     case 'loading':
       return { ...state, loading: true }
     case 'loaded': {
-      const { dateTime, filename, img, prev, next } = action.data
+      const { dateTime, filename, desc, img, prev, next } = action.data
       let formattedDate
       if (dateTime) {
         const newDate = new Date(dateTime * 1000)
@@ -42,6 +42,8 @@ function reducer(state, action) {
         successMsg: '',
         errorMsg: '',
         error: '',
+        desc,
+        descVal: desc,
         dateVal: new Date(dateTime * 1000),
         displayedDate: formattedDate,
         displayedFilename: filename,
@@ -60,6 +62,8 @@ function reducer(state, action) {
       return { ...state, editing: !state.editing }
     case 'dateValChanged':
       return { ...state, dateVal: action.data.dateVal }
+    case 'descValChanged':
+      return { ...state, descVal: action.data.descVal }
     case 'filenameValChange':
       return { ...state, filenameVal: action.data.filenameVal }
     case 'error':
@@ -73,10 +77,12 @@ function reducer(state, action) {
           state.dateVal
         )
       }
+      console.log('state.descVal', state.descVal)
       return {
         ...state,
         updating: false,
         editing: false,
+        image: { ...state.image, desc: state.descVal },
         displayedFilename: state.filenameVal,
         displayedDate: formattedDate,
         successMsg: 'Successfully saved your changes',
@@ -102,7 +108,8 @@ const MemoryPage = ({ user, imageId }) => {
   // prevId,
   const [state, dispatch] = useReducer(reducer, initialState)
   const {
-    image: { id, contributorName, url },
+    image: { id, contributorName, url, desc },
+    descVal,
     nextId,
     prevId,
     loading,
@@ -143,7 +150,7 @@ const MemoryPage = ({ user, imageId }) => {
               const img = imgResp[imageIndex]
               dispatch({
                 type: 'loaded',
-                data: { dateTime: img.date.seconds, filename: img.filename, img, prev, next },
+                data: { dateTime: img.date.seconds, filename: img.filename, desc: img.desc, img, prev, next },
               })
             }
           } else {
@@ -159,6 +166,7 @@ const MemoryPage = ({ user, imageId }) => {
 
   useEffect(() => {
     const handleKeyNavigate = (e) => {
+      if (editing) return
       if (e.key === 'ArrowLeft' && prevId) router.push(`/mem/${prevId}`)
       if (e.key === 'ArrowRight' && nextId) router.push(`/mem/${nextId}`)
     }
@@ -166,7 +174,7 @@ const MemoryPage = ({ user, imageId }) => {
     return () => {
       document.removeEventListener('keydown', handleKeyNavigate)
     }
-  }, [nextId, prevId, router])
+  }, [nextId, prevId, router, editing])
 
   useEffect(() => {
     document.body.style.overflow = editing ? 'hidden' : 'unset'
@@ -197,7 +205,7 @@ const MemoryPage = ({ user, imageId }) => {
   const handleUpdate = async () => {
     dispatch({ type: 'updating' })
     try {
-      const resp = await updateFileData(imageId, { filenameVal, dateVal })
+      const resp = await updateFileData(imageId, { filenameVal, dateVal, descVal })
       if (!resp.error) {
         dispatch({ type: 'successfulEdit' })
       } else {
@@ -210,6 +218,7 @@ const MemoryPage = ({ user, imageId }) => {
 
   const onChange = ({ target }) => {
     if (target.name === 'filename') dispatch({ type: 'filenameValChange', data: { filenameVal: target.value } })
+    if (target.name === 'description') dispatch({ type: 'descValChanged', data: { descVal: target.value } })
   }
 
   return (
@@ -329,6 +338,12 @@ const MemoryPage = ({ user, imageId }) => {
                       </div>
                     )}
                   </div>
+                  <div className="py-2">
+                    <span className="uppercase font-light text-gray-500">Description</span>
+                    <p className={`text-lg pt-2 font-medium ${desc ? 'text-gray-900' : 'text-gray-400'}`}>
+                      {desc || 'No description'}
+                    </p>
+                  </div>
                   <div className="description w-full my-16 text-gray-500 text-sm">
                     <p className="italic text-center">
                       This comment service requires you to create an account and be signed in to be able to post a
@@ -376,6 +391,16 @@ const MemoryPage = ({ user, imageId }) => {
                           }
                         />
                       </div>
+                      <label className="block">
+                        <span className="text-gray-700">Description</span>
+                        <textarea
+                          name="description"
+                          onChange={onChange}
+                          value={descVal}
+                          className="resize border border-gray-300 rounded-md p-2 mt-1 block w-full"
+                          placeholder={descVal}
+                        />
+                      </label>
                     </div>
                     <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-md">
                       <button

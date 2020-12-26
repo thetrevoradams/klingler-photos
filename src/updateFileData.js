@@ -11,6 +11,7 @@ const updateFileData = async (imageId, data) => {
       .update({
         filename: data.filenameVal,
         date: firebase.firestore.Timestamp.fromDate(data.dateVal),
+        desc: data.descVal,
       })
     return { resp }
   } catch (error) {

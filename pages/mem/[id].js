@@ -391,7 +391,7 @@ const MemoryPage = ({ user, imageId }) => {
                           }
                         />
                       </div>
-                      <label className="block">
+                      <label className="mt-4 block">
                         <span className="text-gray-700">Description</span>
                         <textarea
                           name="description"

@@ -1,11 +1,14 @@
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/storage'
-import 'firebase/firestore'
+// import firebase from 'firebase/app'
+// import 'firebase/auth'
+// import 'firebase/storage'
+
+import { initializeApp } from "firebase/app";
+// import { getFirestore } from "firebase/firestore";
+
 
 function getFirebase() {
-  if (!firebase.apps.length) {
-    firebase.initializeApp({
+  // if (!firebase.apps.length) {
+    const app = initializeApp({
       apiKey: process.env.FIREBASE_API_KEY,
       authDomain: process.env.FIREBASE_AUTH_DOMAIN,
       databaseURL: process.env.FIREBASE_DATABASE_URL,
@@ -14,10 +17,11 @@ function getFirebase() {
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
       appId: process.env.FIREBASE_APP_ID,
     })
-  }
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  // }
+  // TODO: Figure out how to setPersistence in v9
+  // firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
 
-  return firebase
+  return app
 }
 
 export default getFirebase

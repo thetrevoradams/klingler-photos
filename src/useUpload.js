@@ -1,19 +1,18 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-restricted-syntax */
-import getFirebase from '../firebase/firebase'
+import { useCollection } from 'swr-firebase'
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-const addDbEntry = async (fileUrl, user, filename, firebase) => {
+const addDbEntry = async (fileUrl, user, filename) => {
   try {
-    const resp = await firebase
-      .firestore()
-      .collection('images')
-      .add({
-        contributorId: user.uid,
-        filename,
-        contributorName: user.firstName,
-        date: new Date(),
-        url: fileUrl,
-      })
+    const { add } = useCollection('images')
+
+    const resp = await add({
+      contributorId: user.uid,
+      filename,
+      contributorName: user.firstName,
+      date: new Date(),
+      url: fileUrl,
+    });
+    
     return { resp }
   } catch (error) {
     return { error }
@@ -22,14 +21,13 @@ const addDbEntry = async (fileUrl, user, filename, firebase) => {
 
 const uploadFiles = async (files, user) => {
   try {
-    const firebase = await getFirebase()
-    const storageRef = await firebase.storage().ref()
+    const storage = getStorage();
 
     for (const file of files) {
-      const fileRef = storageRef.child(file.name)
-      const uploadResp = await fileRef.put(file)
-      const fileUrl = await uploadResp.ref.getDownloadURL()
-      await addDbEntry(fileUrl, user, file.name, firebase)
+      const storageRef = ref(storage, file.name);
+      const uploadResp = await uploadBytes(storageRef, file)
+      const fileUrl = await getDownloadURL(uploadResp.ref)
+      await addDbEntry(fileUrl, user, file.name)
     }
     return { success: 'success' }
   } catch (error) {

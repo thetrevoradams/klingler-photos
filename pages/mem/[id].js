@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useEffect, useRef, useReducer } from 'react'
 import { DiscussionEmbed } from 'disqus-react'
+import { useCollection } from 'swr-firebase'
 import Link from 'next/link'
 import { Router, useRouter } from 'next/router'
 import DatePicker from 'react-datepicker'
@@ -9,15 +10,15 @@ import verifySession from '../../utils/verifySession'
 import 'react-datepicker/dist/react-datepicker.css'
 import updateFileData from '../../src/updateFileData'
 import Toast from '../../src/toast'
-import getPhotos from '../../src/getPhotos'
+import Loader from '../../src/Loader'
+import Image from 'next/image'
 
 const initialState = {
   image: { id: '', filename: '', date: { s: 0 }, desc: '' },
   errorMsg: '',
-  error: false,
   successMsg: false,
   editing: false,
-  loading: true,
+  loading: false,
   updating: false,
   dateVal: 0,
 }
@@ -41,7 +42,6 @@ function reducer(state, action) {
         ...state,
         successMsg: '',
         errorMsg: '',
-        error: '',
         desc,
         descVal: desc,
         dateVal: new Date(dateTime * 1000),
@@ -66,8 +66,6 @@ function reducer(state, action) {
       return { ...state, descVal: action.data.descVal }
     case 'filenameValChange':
       return { ...state, filenameVal: action.data.filenameVal }
-    case 'error':
-      return { ...state, loading: false, error: true }
     case 'updating':
       return { ...state, updating: true }
     case 'successfulEdit': {
@@ -95,16 +93,9 @@ function reducer(state, action) {
 }
 
 const MemoryPage = ({ user, imageId }) => {
-  // image: {
-  //   id,
-  //   contributorName,
-  //   url,
-  //   filename,
-  //   date: { _seconds: s },
-  //   tags,
-  // },
-  // nextId,
-  // prevId,
+  const router = useRouter()
+  const { data: images, error } = useCollection(`images`)
+
   const [state, dispatch] = useReducer(reducer, initialState)
   const {
     image: { id, contributorName, url, desc },
@@ -120,11 +111,9 @@ const MemoryPage = ({ user, imageId }) => {
     successMsg,
     filenameVal,
     dateVal,
-    error,
   } = state
   const editModalRef = useRef()
 
-  const router = useRouter()
   const disqusShortname = `klingler`
   const disqusConfig = {
     url: `https://klingler.theburrow.us/mem/${id}`,
@@ -134,34 +123,22 @@ const MemoryPage = ({ user, imageId }) => {
 
   useEffect(() => {
     dispatch({ type: 'loading' })
-    if (user) {
+    if (user && images) {
       dispatch({ type: 'reset' })
-      const fetchData = async () => {
-        try {
-          const { imgResp } = await getPhotos()
-          if (imgResp) {
-            const imageIndex = imgResp.findIndex((item) => item.id === imageId)
-            if (imageIndex >= 0) {
-              let next
-              let prev
-              if (imageIndex !== imgResp.length - 1) next = imgResp[imageIndex + 1].id
-              if (imageIndex !== 0) prev = imgResp[imageIndex - 1].id
-              const img = imgResp[imageIndex]
-              dispatch({
-                type: 'loaded',
-                data: { dateTime: img.date.seconds, filename: img.filename, desc: img.desc, img, prev, next },
-              })
-            }
-          } else {
-            dispatch({ type: 'error' })
-          }
-        } catch (fetchError) {
-          dispatch({ type: 'error' })
-        }
+      const imageIndex = images.findIndex((item) => item.id === imageId)
+      if (imageIndex >= 0) {
+        let next
+        let prev
+        if (imageIndex !== images.length - 1) next = images[imageIndex + 1].id
+        if (imageIndex !== 0) prev = images[imageIndex - 1].id
+        const img = images[imageIndex]
+        dispatch({
+          type: 'loaded',
+          data: { dateTime: img.date.seconds, filename: img.filename, desc: img.desc, img, prev, next },
+        })
       }
-      fetchData()
     }
-  }, [imageId, user])
+  }, [images, imageId])
 
   useEffect(() => {
     const handleKeyNavigate = (e) => {
@@ -227,19 +204,7 @@ const MemoryPage = ({ user, imageId }) => {
       {successMsg && <Toast type="success" msg={successMsg} onComplete={() => dispatch({ type: 'clearMsg' })} />}
       {loading ? (
         <div className="flex flex-1 flex-wrap h-full w-full text-center flex-col justify-center items-center">
-          <svg
-            className="animate-spin mt-28 h-16 w-16 opacity-70 text-light-blue-600"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            />
-          </svg>
+          <Loader />
         </div>
       ) : (
         <>
@@ -250,7 +215,7 @@ const MemoryPage = ({ user, imageId }) => {
           ) : (
             <>
               <div className="bg-gray-100 flex justify-center items-center h-45vh lg:h-60vh relative">
-                <img src={url} alt={displayedFilename} className="object-contain h-full" />
+              <Image src={url} alt={displayedFilename} className="object-contain" layout='fill'/>
                 {prevId && (
                   <Link href={`/mem/${prevId}`}>
                     <a className="absolute top-3/5 left-0 px-5 py-8 opacity-50 hover:opacity-100 transition-opacity">

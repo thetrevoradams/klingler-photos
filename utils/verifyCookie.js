@@ -1,5 +1,6 @@
 import 'firebase/auth'
 import getFirebaseAdmin from '../firebase/admin'
+import { getAuth } from "firebase/auth";
 
 async function verifyCookie(cookie) {
   let user

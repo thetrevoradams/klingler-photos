@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router'
-import getFirebase from '../firebase/firebase'
-import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, setPersistence, signInWithEmailAndPassword, browserSessionPersistence, signOut as authSignOut, sendPasswordResetEmail } from "firebase/auth";
 
 
 const useAuth = () => {
@@ -21,8 +20,9 @@ const useAuth = () => {
 
   const signIn = async (email, password) => {
     try {
-      const firebase = await getFirebase()
       const auth = await getAuth()
+      await setPersistence(auth, browserSessionPersistence)
+
       const authResp = await signInWithEmailAndPassword(auth, email, password)
       if (authResp?.user) {
         const userToken = await authResp?.user.getIdToken()
@@ -38,17 +38,16 @@ const useAuth = () => {
   const signOut = async () => {
     if (window.snapshotObserver) window.snapshotObserver()
     await fetch(`${process.env.BASE_URL}/api/signOut`)
-    const auth = await getFirebase.auth()
-    await signOut(auth)
+    const auth = await getAuth()
+    await authSignOut(auth)
 
     router.push('/login')
   }
 
   const passwordReset = async (email) => {
     try {
-      // TODO: Test this and see if it needs to be updated to await auth() and sendPasswordResetEmail(auth, email)
-      const auth = await getFirebase.auth()
-      const emailResp = await auth.sendPasswordResetEmail(email)
+      const auth = await getAuth()
+      const emailResp = await sendPasswordResetEmail(auth, email)
       return emailResp
     } catch (error) {
       return { error }

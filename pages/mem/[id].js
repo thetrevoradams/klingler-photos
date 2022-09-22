@@ -9,9 +9,8 @@ import DatePicker from 'react-datepicker'
 import Nav from '../../src/nav'
 import verifySession from '../../utils/verifySession'
 import 'react-datepicker/dist/react-datepicker.css'
-import updateFileData from '../../src/updateFileData'
 import Toast from '../../src/toast'
-import Loader from '../../src/Loader'
+import Loader from '../../src/loader'
 import Image from 'next/image'
 
 const initialState = {

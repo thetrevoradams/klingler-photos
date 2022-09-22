@@ -3,7 +3,7 @@ import Nav from '../src/nav'
 import { useCollection } from 'swr-firebase'
 import verifySession from '../utils/verifySession'
 import Grid from '../src/Grid';
-import Loader from '../src/Loader';
+import Loader from '../src/loader';
 
 const Homepage = ({ user }) => {
   const { data: images, error } = useCollection(`images`)

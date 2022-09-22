@@ -1,5 +1,5 @@
 /* eslint-disable no-nested-ternary */
-import React, { useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { Router } from 'next/router'
 import Image from 'next/image'
 import Nav from '../src/nav'

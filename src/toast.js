@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const Toast = ({ type = 'error', msg, persist, onComplete }) => {
   const [showing, setShowing] = useState(true)

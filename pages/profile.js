@@ -1,4 +1,3 @@
-import React from 'react'
 import { Router } from 'next/router'
 import Nav from '../src/nav'
 import verifySession from '../utils/verifySession'

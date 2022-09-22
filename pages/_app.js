@@ -1,4 +1,3 @@
-import React from 'react'
 import '../styles/globals.css'
 import { useRouter } from 'next/router'
 import 'firebase/firestore'
@@ -19,7 +18,8 @@ const fuego = new Fuego(firebaseConfig)
 function MyApp({ Component, pageProps }) {
   const router = useRouter()
 
-  return (<FuegoProvider fuego={fuego}>
+  return (
+  <FuegoProvider fuego={fuego}>
     <Component {...pageProps} key={router.route} />
     </FuegoProvider>)
 }

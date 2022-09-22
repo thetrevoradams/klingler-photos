@@ -1,7 +1,8 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useEffect, useRef, useReducer } from 'react'
+import { useEffect, useRef, useReducer } from 'react'
 import { DiscussionEmbed } from 'disqus-react'
-import { useCollection } from 'swr-firebase'
+import { useCollection, useDocument } from 'swr-firebase'
+import { Timestamp } from "@firebase/firestore";
 import Link from 'next/link'
 import { Router, useRouter } from 'next/router'
 import DatePicker from 'react-datepicker'
@@ -95,6 +96,7 @@ function reducer(state, action) {
 const MemoryPage = ({ user, imageId }) => {
   const router = useRouter()
   const { data: images, error } = useCollection(`images`)
+  const { update } = useDocument(`images/${imageId}`)
 
   const [state, dispatch] = useReducer(reducer, initialState)
   const {
@@ -181,8 +183,12 @@ const MemoryPage = ({ user, imageId }) => {
   const handleUpdate = async () => {
     dispatch({ type: 'updating' })
     try {
-      const resp = await updateFileData(imageId, { filenameVal, dateVal, descVal })
-      if (!resp.error) {
+      const resp = await update({ 
+        filename: filenameVal, 
+        date: Timestamp.fromDate(dateVal), 
+        desc: descVal || ''
+      })
+      if (!resp?.error) {
         dispatch({ type: 'successfulEdit' })
       } else {
         dispatch({ type: 'failedEdit', data: { errorMsg: `There was a problem saving your changes: ${resp.error}` } })

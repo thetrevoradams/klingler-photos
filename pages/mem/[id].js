@@ -1,6 +1,5 @@
 /* eslint-disable no-underscore-dangle */
 import React, { useEffect, useRef, useReducer } from 'react'
-import { DiscussionEmbed } from 'disqus-react'
 import Link from 'next/link'
 import { Router, useRouter } from 'next/router'
 import DatePicker from 'react-datepicker'
@@ -125,12 +124,6 @@ const MemoryPage = ({ user, imageId }) => {
   const editModalRef = useRef()
 
   const router = useRouter()
-  const disqusShortname = `klingler`
-  const disqusConfig = {
-    url: `https://klingler.theburrow.us/mem/${id}`,
-    identifier: `${id}`,
-    title: `${displayedFilename}`,
-  }
 
   useEffect(() => {
     dispatch({ type: 'loading' })
@@ -342,13 +335,6 @@ const MemoryPage = ({ user, imageId }) => {
                     <p className={`text-lg pt-2 font-medium ${desc ? 'text-gray-900' : 'text-gray-400'}`}>
                       {desc || 'No description'}
                     </p>
-                  </div>
-                  <div className="description w-full my-16 text-gray-500 text-sm">
-                    <p className="italic text-center">
-                      This comment service requires you to create an account and be signed in to be able to post a
-                      comment. There are links to sign up shown below.
-                    </p>
-                    <DiscussionEmbed shortname={disqusShortname} config={disqusConfig} />
                   </div>
                 </div>
                 {editing && (
